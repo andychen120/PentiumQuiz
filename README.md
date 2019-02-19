@@ -16,6 +16,6 @@ I followd https://blog.alexellis.io/serverless-golang-with-openfaas/ to add my f
   5. faas-cli push -f order.yml //Push to docker hub because I am using remote cluster.
   6. faas-cli deploy -f order.yml //Deploy function to server.
   
-Currently I could not find any way to pass url path parameter to function. I would seperate POST, GET and DELETE function to 3 functions which have different URLs in 1st step. After competing those functions, I would keep find how to fix URL path.
+Currently I could not find any way to pass url path parameter to function. I would pass the parameters from body in 1st step. After competing those functions, I would keep find how to fix URL path.
 # 5. Connect to MySQL with Golang
 I followed https://blog.alexellis.io/serverless-golang-with-openfaas/ to add mysql liberaries. But build fails due to could not found mysql liberaries. After some testing, it caused by GOPATH setting. Default setting contains some not used path in GKE, it should be export to the function folder.
