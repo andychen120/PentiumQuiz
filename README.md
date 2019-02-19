@@ -1,0 +1,21 @@
+# 1. K8s setting
+## Install on Windows.
+I followed http://dockone.io/article/8136 to install on my computer. But I meet a lot of problem such as hyper-v issue and etc. So I give up to install K8s on Windows.
+## Use GKE (Google Kubernetes Engine)
+I follwed the tutorial and use free-trial account to lauch a GKE on Google Cloud Platform. I create a g1-small instance with 1 node in asia-east1-a at first.
+# 2. OpenFaas setting
+Follow https://github.com/stefanprodan/openfaas-gke to install OpenFaas. But I could not launch OpenFaas at the final step. After check log and status of OpenFaas pod, it shows insufficient memory. It is caused by reserving g1-smal instance which is too small for OpenFaas. After reserving n1-instance-2, OpenFaas could be launched.
+# 3. MySQL setting
+Follow https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/ to install MySQL server on GKE. MySQL server could be connected via kubectrl exec after install, but could not connected from other site. After some study, I fix the service type of MySQL from Nodeport to LoadBalancer and related setting. MySQL server finnaly could be access from other site.
+# 4. GOlang function impementation
+I followd https://blog.alexellis.io/serverless-golang-with-openfaas/ to add my first Golang function on OpenFaas.
+  1. faas-cli new --lang go order //Add new function from template.
+  2. Fix gateway to my environment.
+  3. Fix code.
+  4. faas-cli build -f order.yml //Build function
+  5. faas-cli push -f order.yml //Push to docker hub because I am using remote cluster.
+  6. faas-cli deploy -f order.yml //Deploy function to server.
+  
+Currently I could not find any way to pass url path parameter to function. I would seperate POST, GET and DELETE function to 3 functions which have different URLs in 1st step. After competing those functions, I would keep find how to fix URL path.
+# 5. Connect to MySQL with Golang
+I followed https://blog.alexellis.io/serverless-golang-with-openfaas/ to add mysql liberaries. But build fails due to could not found mysql liberaries. After some testing, it caused by GOPATH setting. Default setting contains some not used path in GKE, it should be export to the function folder.
