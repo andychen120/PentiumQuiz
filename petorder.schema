@@ -1,0 +1,8 @@
+CREATE TABLE `test`.`pet_order` (
+  `id` INT NOT NULL,
+  `petid` INT NULL,
+  `quantity` INT NULL,
+  `shipdate` VARCHAR(45) NULL,
+  `status` VARCHAR(45) NULL,
+  `complete` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
