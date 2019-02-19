@@ -1,0 +1,8 @@
+provider:
+  name: faas
+  gateway: http://34.80.10.134
+functions:
+  inventory:
+    lang: golang-http
+    handler: ./inventory
+    image: andychen120/inventory:latest

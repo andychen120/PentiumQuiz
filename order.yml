@@ -1,0 +1,8 @@
+provider:
+  name: faas
+  gateway: http://34.80.10.134
+functions:
+  order:
+    lang: golang-http
+    handler: ./order
+    image: andychen120/order:latest
