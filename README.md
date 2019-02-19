@@ -7,7 +7,7 @@ I follwed the tutorial and use free-trial account to lauch a GKE on Google Cloud
 Follow https://github.com/stefanprodan/openfaas-gke to install OpenFaas. But I could not launch OpenFaas at the final step. After check log and status of OpenFaas pod, it shows insufficient memory. It is caused by reserving g1-smal instance which is too small for OpenFaas. After reserving n1-instance-2, OpenFaas could be launched.
 # 3. MySQL setting
 Follow https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/ to install MySQL server on GKE. MySQL server could be connected via kubectrl exec after install, but could not connected from other site. After some study, I fix the service type of MySQL from Nodeport to LoadBalancer and related setting. MySQL server finnaly could be access from other site.
-# 4. GOlang function impementation
+# 4. GOlang function build up
 I followd https://blog.alexellis.io/serverless-golang-with-openfaas/ to add my first Golang function on OpenFaas.
   1. faas-cli new --lang go order //Add new function from template.
   2. Fix gateway to my environment.
@@ -19,3 +19,17 @@ I followd https://blog.alexellis.io/serverless-golang-with-openfaas/ to add my f
 Currently I could not find any way to pass url path parameter to function. I would pass the parameters from body in 1st step. After competing those functions, I would keep find how to fix URL path.
 # 5. Connect to MySQL with Golang
 I followed https://blog.alexellis.io/serverless-golang-with-openfaas/ to add mysql liberaries. But build fails due to could not found mysql liberaries. After some testing, it caused by GOPATH setting. Default setting contains some not used path in GKE, it should be export to the function folder.
+# 6. Golang function impementation
+After study json and map usage in Golang, functions could be run in GKE now.
+You could access server by http://34.80.10.134/function/order and http://34.80.10.134/function/inventory.
+Here is some snapshot.
+# 7. How to use these functions
+  1. git clone from repository.
+  2. use faas-cli build the yml file
+  3. use faas-cli push yml file when using remote cluster
+  4. use faas-cli deploy yml file
+  5. Try on OpenFaas UI or curl.
+# 8. Uncompleted items
+* URL path parameter
+* Parameter check
+* Error handling
