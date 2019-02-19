@@ -23,6 +23,14 @@ I followed https://blog.alexellis.io/serverless-golang-with-openfaas/ to add mys
 After study json and map usage in Golang, functions could be run in GKE now.
 You could access server by http://34.80.10.134/function/order and http://34.80.10.134/function/inventory.
 Here is some snapshot.
+* POST order:
+![image](https://github.com/andychen120/PentiumQuiz/blob/master/pictures/post_order.png)
+* DELETE order
+![image](https://github.com/andychen120/PentiumQuiz/blob/master/pictures/delete_order.png)
+* GET order
+![image](https://github.com/andychen120/PentiumQuiz/blob/master/pictures/get_order.png)
+* inventory
+![image](https://github.com/andychen120/PentiumQuiz/blob/master/pictures/inventory.png)
 # 7. How to use these functions
   1. git clone from repository.
   2. use faas-cli build the yml file
