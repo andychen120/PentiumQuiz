@@ -3,8 +3,9 @@ package function
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	_ "fmt"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/openfaas-incubator/go-function-sdk"
@@ -18,7 +19,7 @@ type PetOrder struct {
 	Quantity int    `json:"quantity"`
 	Shipdate string `json:"shipDate"`
 	Status   string `json:"status"`
-	Complete string `json:"complete"`
+	Complete bool   `json:"complete"`
 }
 
 func connectDB() error {
@@ -40,15 +41,24 @@ func addOrder(req handler.Request) (handler.Response, error) {
 	var err error
 	message := ""
 	order := PetOrder{}
+	status := http.StatusOK
 
 	err = json.Unmarshal(req.Body, &order)
 	if err != nil {
-		message = err.Error()
+		// Check if input is folloed format.
+		return handler.Response{
+			Body:       []byte("Invalid Order"),
+			StatusCode: http.StatusBadRequest,
+		}, nil
 	} else {
 		_, err := db.Exec("INSERT INTO pet_order (id, petid, quantity, shipdate, status, complete) VALUES (?, ?, ?, ?, ?, ?)",
-			order.Id, order.Petid, order.Quantity, order.Shipdate, order.Status, order.Complete)
+			order.Id, order.Petid, order.Quantity, order.Shipdate, order.Status, strconv.FormatBool(order.Complete))
 		if err != nil {
-			message = err.Error()
+			// Could not insert to DB.
+			return handler.Response{
+				Body:       []byte("Invalid Order"),
+				StatusCode: http.StatusBadRequest,
+			}, nil
 		} else {
 			message = string(req.Body)
 		}
@@ -56,25 +66,44 @@ func addOrder(req handler.Request) (handler.Response, error) {
 
 	return handler.Response{
 		Body:       []byte(message),
-		StatusCode: http.StatusOK,
+		StatusCode: status,
 		Header: map[string][]string{
 			"Content-Type": {"application/json"},
 		},
-	}, err
+	}, nil
 }
 
 func getOrder(req handler.Request) (handler.Response, error) {
 	var err error
 	message := ""
 
+	// Check if id is integer.
+	if _, err = strconv.Atoi(string(req.Body)); err != nil {
+		return handler.Response{
+			Body:       []byte("Invalid ID supplied"),
+			StatusCode: http.StatusBadRequest,
+		}, nil
+	}
+
 	rows := db.QueryRow("SELECT * FROM pet_order WHERE id = ?", req.Body)
 
 	result := PetOrder{}
-	err = rows.Scan(&result.Id, &result.Petid, &result.Quantity, &result.Shipdate, &result.Status, &result.Complete)
-
-	if err != nil {
-		message = err.Error()
+	var complete string
+	err = rows.Scan(&result.Id, &result.Petid, &result.Quantity, &result.Shipdate, &result.Status, &complete)
+	if complete == "true" {
+		result.Complete = true
 	} else {
+		result.Complete = false
+	}
+
+	// Check if id is existed.
+	if err != nil {
+		return handler.Response{
+			Body:       []byte("Order not found"),
+			StatusCode: http.StatusNotFound,
+		}, nil
+	} else {
+		// Get results, marchal it to json string.
 		jresult, err := json.Marshal(result)
 		if err != nil {
 			message = err.Error()
@@ -94,13 +123,28 @@ func getOrder(req handler.Request) (handler.Response, error) {
 
 func deleteOrder(req handler.Request) (handler.Response, error) {
 	var err error
-	message := ""
 
-	_, err = db.Exec("DELETE FROM pet_order WHERE id = ?", req.Body)
-	message = fmt.Sprintf("error: %s", err.Error())
+	// Check if id is integer.
+	if _, err = strconv.Atoi(string(req.Body)); err != nil {
+		return handler.Response{
+			Body:       []byte("Invalid ID supplied"),
+			StatusCode: http.StatusBadRequest,
+		}, nil
+	}
+
+	// Check if id is existed
+	var exists bool
+	if err := db.QueryRow("SELECT exists (SELECT id FROM pet_order WHERE id = ?)", req.Body).Scan(&exists); err != nil || !exists {
+		return handler.Response{
+			Body:       []byte("Order not found"),
+			StatusCode: http.StatusNotFound,
+		}, nil
+	}
+
+	db.Exec("DELETE FROM pet_order WHERE id = ?", req.Body)
 
 	return handler.Response{
-		Body:       []byte(message),
+		Body:       []byte(""),
 		StatusCode: http.StatusOK,
 	}, err
 }
