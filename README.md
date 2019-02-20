@@ -39,5 +39,3 @@ Here is some snapshot.
   5. Try on OpenFaas UI or curl.
 # 8. Uncompleted items
 * URL path parameter
-* Parameter check
-* Error handling
