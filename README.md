@@ -17,9 +17,11 @@ I followd https://blog.alexellis.io/serverless-golang-with-openfaas/ to add my f
   6. faas-cli deploy -f order.yml //Deploy function to server.
   
 Currently I could not find any way to pass url path parameter to function. I would pass the parameters from body in 1st step. After competing those functions, I would keep find how to fix URL path.
+
 After some study, it might caused by that OpenFaas-GKE I used is not supported url path parameter.
-OpenFaas-GKE: https://github.com/stefanprodan/openfaas-gke
-Passing URL parameter function issue: https://github.com/openfaas/faas/issues/716
+* OpenFaas-GKE: https://github.com/stefanprodan/openfaas-gke
+* Passing URL parameter function issue: https://github.com/openfaas/faas/issues/716
+
 In OpenFaas-GKE commit logs, there seems no related commit. It might be not supported this feature.
 Maybe using Nginx to redirect URL is a workaround.
 
