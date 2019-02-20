@@ -33,7 +33,7 @@ Here is some snapshot.
 ![image](https://github.com/andychen120/PentiumQuiz/blob/master/pictures/inventory.png)
 # 7. How to use these functions
   1. git clone from repository.
-  2. use faas-cli build the yml file
+  2. use faas-cli build order and inventory yml file
   3. use faas-cli push yml file when using remote cluster
   4. use faas-cli deploy yml file
   5. Try on OpenFaas UI or curl.
